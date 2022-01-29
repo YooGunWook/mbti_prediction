@@ -32,7 +32,8 @@ class DataSet(Dataset):
 
                 # MBTI labelling
                 for idx in range(4):
-                    tmp_label.append(self.mbti_dict[idx][writer[idx]])
+                    mbti = writer[idx]
+                    tmp_label.append(self.mbti_dict[idx][mbti])
                 self.labels.append(tmp_label)
 
                 # article preprocessing
