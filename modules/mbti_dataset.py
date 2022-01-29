@@ -14,7 +14,7 @@ class DataSet(Dataset):
             2: {"t": 0, "f": 1},
             3: {"j": 0, "p": 1},
         }
-        self.labels = []
+        self.labels = []  # ex: [[0,1,0,1]]
         self.sentences = []
         self.attention_masks = []
 
