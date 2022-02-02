@@ -56,8 +56,6 @@ class DataSet(Dataset):
 
         # list to torch
         self.labels = torch.tensor(self.labels)
-        self.article = torch.tensor(self.article)
-        self.attention_masks = torch.tensor(self.attention_masks)
 
         def __len__(self):
             return len(self.label)
