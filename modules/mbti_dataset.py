@@ -1,13 +1,13 @@
+from transformers import ElectraTokenizer
 from torch.utils.data import Dataset
 import torch
-import kss
 import json
 import os
 import tqdm
 
 
 class DataSet(Dataset):
-    def __init__(self, path, data_jsons, tokenizer):
+    def __init__(self, path, data_jsons, tokenizer, max_length):
         self.mbti_dict = {
             0: {"e": 0, "i": 1},
             1: {"s": 0, "n": 1},
@@ -15,7 +15,7 @@ class DataSet(Dataset):
             3: {"j": 0, "p": 1},
         }
         self.labels = []  # ex: [[0,1,0,1]]
-        self.sentences = []
+        self.article = []
         self.attention_masks = []
 
         # Data preprocessing
@@ -25,22 +25,39 @@ class DataSet(Dataset):
                 data = json.load(f)
 
             for article_num in data:
-                tmp_label = []
                 article_info = data[article_num]
-                article = article_info["article"]
-                writer = article_info["writer"].split("")
-
-                # MBTI labelling
-                for idx in range(4):
-                    mbti = writer[idx]
-                    tmp_label.append(self.mbti_dict[idx][mbti])
-                self.labels.append(tmp_label)
+                articles = article_info["article"]
+                writers = article_info["writer"]
 
                 # article preprocessing
-                ## need to discuss about sentence length
+                tmp_article = []
+                tmp_attention = []
+                for article in articles:
+                    encoded_dict = tokenizer.encode_plus(
+                        article,
+                        add_special_tokens=True,
+                        max_length=max_length,
+                        padding="max_length",
+                        truncation=True,
+                        return_attention_mask=True,
+                    )
+                    tmp_article.append(encoded_dict["input_ids"])
+                    tmp_attention.append(encoded_dict["attention_mask"])
+
+                # MBTI labelling
+                for writer in writers:
+                    tmp_label = []
+                    for idx in range(4):
+                        mbti = writer[idx]
+                        tmp_label.append(self.mbti_dict[idx][mbti])
+                    self.labels.append(tmp_label)
+                    self.article.append(tmp_article)
+                    self.attention_masks.append(tmp_attention)
 
         # list to torch
         self.labels = torch.tensor(self.labels)
+        self.article = torch.tensor(self.article)
+        self.attention_masks = torch.tensor(self.attention_masks)
 
         def __len__(self):
             return len(self.label)
@@ -55,3 +72,7 @@ class DataSet(Dataset):
 if __name__ == "__main__":
     path = "./data"
     data_jsons = os.listdir(path)
+    tokenizer = ElectraTokenizer.from_pretrained(
+        "monologg/koelectra-base-v3-discriminator"
+    )
+    tmp_dataset = DataSet(path, data_jsons, tokenizer, 200)
