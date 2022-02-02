@@ -15,7 +15,7 @@ class DataSet(Dataset):
             3: {"j": 0, "p": 1},
         }
         self.labels = []  # ex: [[0,1,0,1]]
-        self.article = []
+        self.articles = []
         self.attention_masks = []
 
         # Data preprocessing
@@ -51,20 +51,20 @@ class DataSet(Dataset):
                         mbti = writer[idx]
                         tmp_label.append(self.mbti_dict[idx][mbti])
                     self.labels.append(tmp_label)
-                    self.article.append(tmp_article)
+                    self.articles.append(tmp_article)
                     self.attention_masks.append(tmp_attention)
 
         # list to torch
         self.labels = torch.tensor(self.labels)
 
-        def __len__(self):
-            return len(self.label)
+    def __len__(self):
+        return len(self.labels)
 
-        def __getitem__(self, idx):
-            sentence = self.sentences[idx]
-            attention_mask = self.attention_masks[idx]
-            label = self.labels[idx]
-            return sentence, attention_mask, label
+    def __getitem__(self, idx):
+        article = self.articles[idx]
+        attention_mask = self.attention_masks[idx]
+        label = self.labels[idx]
+        return article, attention_mask, label
 
 
 if __name__ == "__main__":
@@ -74,3 +74,4 @@ if __name__ == "__main__":
         "monologg/koelectra-base-v3-discriminator"
     )
     tmp_dataset = DataSet(path, data_jsons, tokenizer, 200)
+    print(tmp_dataset.__getitem__(3))
