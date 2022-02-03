@@ -24,7 +24,7 @@ class MBTIClassifier(nn.Module):
         self.sigmoid = torch.nn.Sigmoid()
 
     def _init_weight_(self):
-        # weight 초기화
+        # initializing weight
         nn.init.xavier_uniform_(self.linear_1.weight)
         nn.init.xavier_uniform_(self.linear_2.weight)
         nn.init.xavier_uniform_(self.linear_3.weight)
