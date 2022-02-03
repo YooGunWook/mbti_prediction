@@ -37,6 +37,7 @@ class MBTIClassifier(nn.Module):
 
         # first layer
         pooled_out = torch.cat(pooled_out, dim=0)
+        print(pooled_out.shape)
         pooled_out = self.linear1(pooled_out)
         pooled_out = self.relu(pooled_out)
         pooled_out = self.dropout(pooled_out)
@@ -62,3 +63,29 @@ class MBTIClassifier(nn.Module):
 
 if __name__ == "__main__":
     model = MBTIClassifier("monologg/koelectra-base-v3-discriminator")
+    tokenizer = transformers.ElectraTokenizer.from_pretrained(
+        "monologg/koelectra-base-v3-discriminator"
+    )
+    sents = ["안녕하세요. 저는 강아지입니다.", "오늘은 뭐 하는 날인가요?"]
+    fin_inputs = []
+    fin_attentions = []
+    for _ in range(3):
+        tmp_inputs = []
+        tmp_attentions = []
+        for sent in sents:
+            encoded_dict = tokenizer.encode_plus(
+                sent,
+                add_special_tokens=True,
+                max_length=15,
+                padding="max_length",
+                truncation=True,
+                return_attention_mask=True,
+            )
+            tmp_inputs.append(encoded_dict["input_ids"])
+            tmp_attentions.append(encoded_dict["attention_mask"])
+        fin_inputs.append(tmp_inputs)
+        fin_attentions.append(tmp_attentions)
+
+    fin_inputs = torch.tensor(fin_inputs)
+    fin_attentions = torch.tensor(fin_attentions)
+    print(model(fin_inputs, fin_attentions))
