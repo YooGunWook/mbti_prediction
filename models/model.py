@@ -68,10 +68,13 @@ class MBTIClassifier(nn.Module):
 
 
 if __name__ == "__main__":
+    import time
+
     model = MBTIClassifier("monologg/koelectra-base-v3-discriminator")
-    tokenizer = transformers.ElectraTokenizer.from_pretrained(
+    tokenizer = transformers.AutoTokenizer.from_pretrained(
         "monologg/koelectra-base-v3-discriminator"
     )
+
     sents = ["안녕하세요. 저는 강아지입니다.", "오늘은 뭐 하는 날인가요?"]
     fin_inputs = []
     fin_attentions = []
@@ -94,4 +97,6 @@ if __name__ == "__main__":
 
     fin_inputs = torch.tensor(fin_inputs)
     fin_attentions = torch.tensor(fin_attentions)
+    t0 = time.time()
     print(model(fin_inputs, fin_attentions))
+    print(time.time() - t0)
