@@ -3,10 +3,10 @@ from torch import nn
 import transformers
 
 
-class MBTIClassifier(nn.modules):
+class MBTIClassifier(nn.Module):
     def __init__(self, model_name):
-        self.model_name = model_name
-        self.model = transformers.AutoModel.from_pretrained(self.model_name)
+        super(MBTIClassifier, self).__init__()
+        self.model = transformers.AutoModel.from_pretrained(model_name)
         self.linear1 = nn.Linear(
             self.model.config.hidden_size, self.model.config.hidden_size // 8
         )
@@ -58,3 +58,7 @@ class MBTIClassifier(nn.modules):
         res = self.sigmoid(pooled_out)
 
         return res
+
+
+if __name__ == "__main__":
+    model = MBTIClassifier("monologg/koelectra-base-v3-discriminator")
