@@ -23,6 +23,13 @@ class MBTIClassifier(nn.Module):
         self.relu = torch.nn.LeakyReLU()
         self.sigmoid = torch.nn.Sigmoid()
 
+    def _init_weight_(self):
+        # weight 초기화
+        nn.init.xavier_uniform_(self.linear_1.weight)
+        nn.init.xavier_uniform_(self.linear_2.weight)
+        nn.init.xavier_uniform_(self.linear_3.weight)
+        nn.init.xavier_uniform_(self.linear_4.weight)
+
     def forward(self, sent, attention_mask, cls_pos=0):
         pooled_out = []
 
