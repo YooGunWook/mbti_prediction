@@ -37,7 +37,6 @@ class MBTIClassifier(nn.Module):
 
         # first layer
         pooled_out = torch.cat(pooled_out, dim=0)
-        print(pooled_out.shape)
         pooled_out = self.linear1(pooled_out)
         pooled_out = self.relu(pooled_out)
         pooled_out = self.dropout(pooled_out)
