@@ -1,2 +1,0 @@
-import writer_preproc
-import article_prproc
