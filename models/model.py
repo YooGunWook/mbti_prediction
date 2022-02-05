@@ -63,12 +63,13 @@ class MBTIClassifier(nn.Module):
         # fourth layer
         pooled_out = self.linear4(pooled_out)
         res = self.sigmoid(pooled_out)
-
         return res
 
 
 if __name__ == "__main__":
     import time
+
+    loss_fn = nn.CrossEntropyLoss()
 
     model = MBTIClassifier("monologg/koelectra-base-v3-discriminator")
     tokenizer = transformers.AutoTokenizer.from_pretrained(
@@ -78,6 +79,7 @@ if __name__ == "__main__":
     sents = ["안녕하세요. 저는 강아지입니다.", "오늘은 뭐 하는 날인가요?"]
     fin_inputs = []
     fin_attentions = []
+    fin_label = []
     for _ in range(3):
         tmp_inputs = []
         tmp_attentions = []
@@ -94,9 +96,15 @@ if __name__ == "__main__":
             tmp_attentions.append(encoded_dict["attention_mask"])
         fin_inputs.append(tmp_inputs)
         fin_attentions.append(tmp_attentions)
+        fin_label.append([0, 1, 0, 1])
 
     fin_inputs = torch.tensor(fin_inputs)
     fin_attentions = torch.tensor(fin_attentions)
+    fin_label = torch.tensor(fin_label).float()
+    # print(fin_inputs.shape)
+    # print(fin_inputs)
     t0 = time.time()
-    print(model(fin_inputs, fin_attentions))
+    output = model(fin_inputs, fin_attentions)
+    print(output)
     print(time.time() - t0)
+    print(f"loss: {loss_fn(fin_label, output)}")
