@@ -13,7 +13,7 @@ class Trainer(object):
         scheduler,
         warmup_scheduler,
         threshold,
-        early_stop,
+        early_stop=0,
     ):
         self.model = model
         self.device = device
@@ -23,6 +23,8 @@ class Trainer(object):
         self.warmup_scheduler = warmup_scheduler
         self.threshold = threshold
         self.early_stop = early_stop
+        self.trigger = False
+        self.early_count = 0
         self.loss_chk = 1e9
         self.acc_chk = -1e9
 
@@ -76,7 +78,7 @@ class Trainer(object):
                 )
 
             else:
-                self.early_stop += 1
+                self.early_count += 1
                 if self.acc_chk < val_acc:
                     self.acc_chk = val_acc
                     print(
@@ -87,8 +89,12 @@ class Trainer(object):
                     )
                 else:
                     print(
-                        f"{epoch_index + 1:^7} | {step:^7} | {'-':^12.6f} | {val_loss:^12.6f} | {val_acc:^12.6f} | {'val_early_stop': ^12} | {time_elapsed:^9.2f}"
+                        f"{epoch_index + 1:^7} | {step:^7} | {'-':^12.6f} | {val_loss:^12.6f} | {val_acc:^12.6f} | {'val_early_count': ^12} | {time_elapsed:^9.2f}"
                     )
+
+            if self.early_count == self.early_stop:
+                print("Early Stop!!!")
+                self.trigger = True
 
     def validation(self, dataloader):
         self.model.eval()
