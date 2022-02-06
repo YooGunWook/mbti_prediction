@@ -27,6 +27,12 @@ def find_writer(writer) :
         for k in range(4) : 
             if i in can[k] : 
                 li[k].append(i)
+    null_cnt = 0
+    for i in li : 
+        if not i :
+            null_cnt += 1
+    if null_cnt > 2 : 
+        return
     for i in range(4) : 
         if not li[i] and ('x' in s or 'o' in s) and cnt != 0 : 
             li[i] += can[i]
@@ -56,9 +62,12 @@ def preproc_article(article):
     # 20글자 미만 제외
     if len(article) < 20 : 
         return
-    article = split_sentences(article)
-    return article
-
+    try : 
+        article = split_sentences(article)
+        return article
+    except : 
+        return
+    
 def preproc_writer(writer) :
     # 대문자-> 소문자로 
     writer = writer.lower()
@@ -113,9 +122,8 @@ def preprocess_all(path) :
 
     
 if __name__ == '__main__':
-    list_data = ['crawl_res_'+str(i)+'.json' for i in range(1,1324)]
+    list_data = ['crawl_res_'+str(i)+'.json' for i in range(18,1324)]
     preprocess_csv = list()
     csv_cnt = 1
     for path in tqdm.tqdm(list_data) : 
-        print(path)
         preprocess_all(path)
