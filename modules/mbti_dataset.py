@@ -5,7 +5,7 @@ import tqdm
 
 
 class DataSet(Dataset):
-    def __init__(self, data, tokenizer, max_length):
+    def __init__(self, article_data, writer_data, tokenizer, max_length):
         self.mbti_dict = {
             0: {"e": 0, "i": 1},
             1: {"s": 0, "n": 1},
@@ -17,14 +17,14 @@ class DataSet(Dataset):
         self.attention_masks = []
 
         # Data preprocessing
-        for row in tqdm.tqdm(data):
-            article = row["article"]
-            writer = row["writer"]
+        for idx in tqdm.tqdm(range(0, len(article_data))):
+            articles = article_data[idx]
+            writer = writer_data[idx]
 
             # article preprocessing
             tmp_article = []
             tmp_attention = []
-            for article in article:
+            for article in articles:
                 encoded_dict = tokenizer.encode_plus(
                     article,
                     add_special_tokens=True,
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     tokenizer = ElectraTokenizer.from_pretrained(
         "monologg/koelectra-base-v3-discriminator"
     )
-    data_path = "./example.csv"
-    data = pd.read_csv(data_path)
+    data = pd.read_csv("./data/preprocessed_1.csv")
+    data = data.to_numpy()
     tmp_dataset = DataSet(data, tokenizer, 200)
     print(tmp_dataset.__getitem__(3))
