@@ -16,7 +16,6 @@ import ast
 import yaml
 import random
 import numpy as np
-import pandas as pd
 
 TRAIN_CONFIG_PATH = "./config/config.yml"
 
@@ -108,9 +107,7 @@ def main():
     model_trainer = trainer(model, device, loss_fn, optimizer, scheduler, THRESHOLD, EARLY_STOP)
     
     for epoch in EPOCHS:
-        print(
-            f"{'Epoch':^7} | {'Batch step':^7} | {'Train Loss':^12} | {'Val Loss':^10} | {'Val Acc':^9} | {'type':^9} | {'Elapsed':^9}"
-        )
+        print(f"{'Epoch':^7} | {'Batch step':^7} | {'Train Loss':^12} | {'Val Loss':^10} | {'Val Acc':^9} | {'type':^9} | {'Elapsed':^9}")
         model_trainer.train(trainloader, validloader, epoch)
     
     
